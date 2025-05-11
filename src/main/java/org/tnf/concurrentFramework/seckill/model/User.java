@@ -1,4 +1,4 @@
-package com.tnf.concurrentframework.seckill.model;
+package org.tnf.concurrentframework.seckill.model;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
@@ -12,4 +12,5 @@ public class User {
 
     private String username;
     private String email;
+    private String password;
 }

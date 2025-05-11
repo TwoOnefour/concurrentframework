@@ -1,4 +1,4 @@
-package org.tnf.concurrentFramework;
+package org.tnf.concurrentframework;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
