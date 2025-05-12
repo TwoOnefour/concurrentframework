@@ -9,4 +9,9 @@ public interface UserService {
     UserVO getUserById(String id);
 
     UserVO createUser(UserDTO user);
+
+    UserVO login(UserDTO user);
+
+    UserVO logout(String sessionId);
+
 }
