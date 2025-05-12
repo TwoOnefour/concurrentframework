@@ -1,4 +1,4 @@
-package com.example.concurrentframework;
+package org.tnf.concurrentframework;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

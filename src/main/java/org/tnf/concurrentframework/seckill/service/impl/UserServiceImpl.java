@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Username or password cannot be empty");
         }
 
-        redisTemplate.opsForValue().get("user:token:" + user.);
+//        redisTemplate.opsForValue().get("user:token:" + user.);
         User existingUser = userMapper.selectByName(user.getUsername());
         if (existingUser == null) {
             throw new RuntimeException("User not found");
@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Invalid password");
         }
 
-        redisTemplate.opsForValue().set("user:cache:" + userId, user, 30, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set("user:cache:" + existingUser.getId(), user, 30, TimeUnit.MINUTES);
         String token = UUID.randomUUID().toString();
         int randomExpireTime = (int) (Math.random() * 30 + 1);
 
@@ -75,7 +75,16 @@ public class UserServiceImpl implements UserService {
         return new UserVO(existingUser);
     }
 
-    public UserVO getUserFromRedis(UserDTO user) {
+    @Override
+    public UserVO logout(String sessionId) {
+        return null;
+    }
 
+    public UserVO getUserFromRedis(UserDTO user) {
+        return redisTemplate.opsForValue().get("user:token:");
+    }
+
+    public void SetUserInRedisBy(User user) {
+        redisTemplate.opsForValue().set("user:");
     }
 }
