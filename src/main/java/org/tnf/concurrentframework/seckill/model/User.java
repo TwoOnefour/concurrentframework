@@ -21,7 +21,7 @@ public class User implements UserDetails {
     private String email;
     private String password;
 
-    // 可根据实际需求返回用户权限
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.emptyList();
@@ -37,7 +37,7 @@ public class User implements UserDetails {
         return username;
     }
 
-    // 下面这些方法可根据实际业务调整
+
     @Override
     public boolean isAccountNonExpired() {
         return true;

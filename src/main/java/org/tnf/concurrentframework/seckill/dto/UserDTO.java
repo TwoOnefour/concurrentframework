@@ -1,4 +1,5 @@
 package org.tnf.concurrentframework.seckill.dto;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -12,6 +13,8 @@ public class UserDTO {
     @Email
     private String email;
     private String password;
+    private String token;
+
 
     UserDTO() {
 

@@ -7,6 +7,7 @@ import org.tnf.concurrentframework.seckill.dao.UserMapper;
 import org.tnf.concurrentframework.seckill.dto.UserDTO;
 import org.tnf.concurrentframework.seckill.model.User;
 import org.tnf.concurrentframework.seckill.service.UserService;
+import org.tnf.concurrentframework.seckill.utils.JwtUtils;
 import org.tnf.concurrentframework.seckill.vo.UserVO;
 
 import java.util.UUID;
@@ -25,7 +26,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserVO register(UserDTO dto) {
-        User user = userMapper.selectByName(dto.getUsername());
+        User user = userMapper.selectByUserName(dto.getUsername());
         if (user != null) {
             throw new RuntimeException("User already exists");
         }
@@ -56,35 +57,38 @@ public class UserServiceImpl implements UserService {
         if (user.getUsername() == null || user.getPassword() == null) {
             throw new RuntimeException("Username or password cannot be empty");
         }
-
-//        redisTemplate.opsForValue().get("user:token:" + user.);
-        User existingUser = userMapper.selectByName(user.getUsername());
+        User existingUser = userMapper.selectByUserName(user.getUsername());
         if (existingUser == null) {
             throw new RuntimeException("User not found");
         }
         if (!existingUser.getPassword().equals(user.getPassword())) {
             throw new RuntimeException("Invalid password");
         }
+        long randomExpireTime = System.currentTimeMillis() + 3600 * 1000 +
+                (long) (Math.random() * 1000 * 60);
+        String jwt = JwtUtils.generateToken(existingUser.getId(), randomExpireTime);
+        redisTemplate
+                .opsForValue()
+                .set("user:jwt:" + jwt, existingUser, randomExpireTime, TimeUnit.MINUTES);
 
-        redisTemplate.opsForValue().set("user:cache:" + existingUser.getId(), user, 30, TimeUnit.MINUTES);
-        String token = UUID.randomUUID().toString();
-        int randomExpireTime = (int) (Math.random() * 30 + 1);
-
-        redisTemplate.opsForValue()
-                .set("user:token:" + token, existingUser.getId(), 30 + randomExpireTime, TimeUnit.MINUTES);
         return new UserVO(existingUser);
     }
 
     @Override
-    public UserVO logout(String sessionId) {
-        return null;
+    public void logout(String jwt) {
+        redisTemplate.delete("user:jwt:" + jwt);
     }
 
-    public UserVO getUserFromRedis(UserDTO user) {
-        return redisTemplate.opsForValue().get("user:token:");
+    public UserVO getUserByToken(String token) {
+        if (token == null || !JwtUtils.isTokenValid(token)) {
+            throw new RuntimeException("Invalid token");
+        }
+        String userId = JwtUtils.getUserId(token);
+        User user = (User) redisTemplate.opsForValue().get("user:jwt:" + userId);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        return new UserVO(user);
     }
 
-    public void SetUserInRedisBy(User user) {
-        redisTemplate.opsForValue().set("user:");
-    }
 }

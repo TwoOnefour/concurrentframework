@@ -12,6 +12,7 @@ public interface UserService {
 
     UserVO login(UserDTO user);
 
-    UserVO logout(String sessionId);
+    void logout(String sessionId);
 
+    UserVO getUserByToken(String token);
 }

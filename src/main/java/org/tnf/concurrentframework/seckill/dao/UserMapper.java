@@ -8,7 +8,8 @@ import org.tnf.concurrentframework.seckill.model.User;
 @Mapper
 public interface UserMapper extends BaseMapper<User> {
 
-    User selectByName(@NotBlank String username);
+    User selectByUserName(@NotBlank String username);
+
     User selectByEmail(@NotBlank String email);
 
 }
