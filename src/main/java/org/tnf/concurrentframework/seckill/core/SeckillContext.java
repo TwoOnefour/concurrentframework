@@ -6,11 +6,11 @@ public interface SeckillContext {
      *
      * @return the topic of the current seckill
      */
-    String getUuid();
+    String seckillGetUuid();
     /**
      * Get the user id of the current seckill
      *
      * @return the user id of the current seckill
      */
-    String getUserId();
+    String seckillGetUserId();
 }

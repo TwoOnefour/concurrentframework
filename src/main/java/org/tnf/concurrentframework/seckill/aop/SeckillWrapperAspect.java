@@ -26,13 +26,21 @@ public class SeckillWrapperAspect {
 
     @Around("@annotation(wrapper)")
     public Object around(ProceedingJoinPoint joinPoint, SeckillWrapper wrapper) {
-        Object arg = joinPoint.getArgs()[0];
+        Object[] args = joinPoint.getArgs();
+        Class<?> paramType = wrapper.paramType();
 
-        if (!(arg instanceof SeckillContext)) {
-            throw new IllegalArgumentException("Request body must implement SeckillContext");
+        SeckillContext context = null;
+        for (Object arg : args) {
+            if (paramType.isInstance(arg)) {
+                context = (SeckillContext) arg;
+                break;
+            }
         }
 
-        SeckillContext context = (SeckillContext) arg;
+        if (context == null) {
+            throw new IllegalArgumentException("Request body must be of type " + paramType.getName());
+        }
+
         RedisTokenBucket tokenBucket = bucketCache.computeIfAbsent(wrapper.topic(),
                 k -> new RedisTokenBucket(redisTemplate, k, wrapper.capacity(), wrapper.refillRate()));
 
@@ -41,13 +49,13 @@ public class SeckillWrapperAspect {
         }
 
         if (wrapper.idempotent()) {
-            String uuidKey = "seckill:uuid:" + context.getUuid();
+            String uuidKey = "seckill:uuid:" + context.seckillGetUuid();
             if (Boolean.FALSE.equals(redisTemplate.opsForValue().setIfAbsent(uuidKey, "1", Duration.ofMinutes(10)))) {
                 throw new RuntimeException("Duplicate order request");
             }
         }
 
-        String userKey = "seckill:user:" + context.getUserId();
+        String userKey = "seckill:user:" + context.seckillGetUserId();
         if (Boolean.FALSE.equals(redisTemplate.opsForValue().setIfAbsent(userKey, "1", Duration.ofSeconds(1)))) {
             throw new RuntimeException("Request too frequent");
         }

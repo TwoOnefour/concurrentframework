@@ -1,5 +1,7 @@
 package org.tnf.concurrentframework.seckill.annotation;
 
+import org.tnf.concurrentframework.seckill.core.SeckillContext;
+
 import java.lang.annotation.*;
 
 @Target(ElementType.METHOD)
@@ -10,4 +12,5 @@ public @interface SeckillWrapper {
     int capacity() default 100;
     int refillRate() default 10;
     boolean idempotent() default true;
+    Class<?> paramType() default SeckillContext.class;
 }
