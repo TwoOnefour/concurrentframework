@@ -60,6 +60,14 @@ public class SeckillWrapperAspect {
             throw new RuntimeException("Request too frequent");
         }
 
+        context.setProceedTask(() -> {
+            try {
+                joinPoint.proceed();
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+        });
+
         kafkaTemplate.send(wrapper.topic(), context);
 
         return context;

@@ -13,4 +13,16 @@ public interface SeckillContext {
      * @return the user id of the current seckill
      */
     String seckillGetUserId();
+
+    Runnable getProceedTask();
+
+    void setProceedTask(Runnable task);
+
+    default Object executeBusinessLogic() throws Exception {
+        if (getProceedTask() != null) {
+            getProceedTask().run();
+        }
+        return null;
+    }
+
 }
