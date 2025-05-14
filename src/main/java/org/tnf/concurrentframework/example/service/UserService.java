@@ -1,7 +1,7 @@
-package org.tnf.concurrentframework.seckill.service;
+package org.tnf.concurrentframework.example.service;
 
-import org.tnf.concurrentframework.seckill.dto.UserDTO;
-import org.tnf.concurrentframework.seckill.vo.UserVO;
+import org.tnf.concurrentframework.example.dto.UserDTO;
+import org.tnf.concurrentframework.example.vo.UserVO;
 
 public interface UserService {
     UserVO register(UserDTO dto);

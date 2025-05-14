@@ -1,10 +1,10 @@
-package org.tnf.concurrentframework.seckill.dto;
+package org.tnf.concurrentframework.example.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
-import org.tnf.concurrentframework.seckill.model.User;
+import org.tnf.concurrentframework.example.model.User;
 
 @Data
 public class UserDTO {
@@ -14,7 +14,7 @@ public class UserDTO {
     private String email;
     private String password;
     private String token;
-
+    private String id;
 
     UserDTO() {
 

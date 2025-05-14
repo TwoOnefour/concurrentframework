@@ -19,19 +19,16 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter'
-    // MyBatis-Plus 启动器
-    implementation 'com.baomidou:mybatis-plus-boot-starter:3.5.5'
-
-    // Lombok（简化实体类 Getter/Setter 等）
-    compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+    compileOnly 'org.projectlombok:lombok'
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'com.baomidou:mybatis-plus-boot-starter:3.5.5'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    // Spring Boot 基础依赖
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'mysql:mysql-connector-java:8.0.28'
+    implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-security'

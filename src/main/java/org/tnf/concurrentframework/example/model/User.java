@@ -1,4 +1,4 @@
-package org.tnf.concurrentframework.seckill.model;
+package org.tnf.concurrentframework.example.model;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;

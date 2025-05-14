@@ -1,8 +1,8 @@
-package org.tnf.concurrentframework.seckill.vo;
+package org.tnf.concurrentframework.example.vo;
 
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
-import org.tnf.concurrentframework.seckill.model.User;
+import org.tnf.concurrentframework.example.model.User;
 
 @Data
 public class UserVO {

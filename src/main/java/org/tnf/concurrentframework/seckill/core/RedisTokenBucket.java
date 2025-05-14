@@ -1,4 +1,4 @@
-package org.tnf.concurrentframework.seckill.ratelimit;
+package org.tnf.concurrentframework.seckill.core;
 
 import org.springframework.data.redis.core.RedisTemplate;
 
@@ -21,7 +21,7 @@ public class RedisTokenBucket {
     public boolean tryConsume() {
         Long tokens = redisTemplate.opsForValue().decrement(key);
         if (tokens == null || tokens < 0) {
-            redisTemplate.opsForValue().increment(key); // 回滚
+            redisTemplate.opsForValue().increment(key);
             return false;
         }
         return true;

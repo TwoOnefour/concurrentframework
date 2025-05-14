@@ -1,14 +1,14 @@
-package org.tnf.concurrentframework.seckill.service.impl;
+package org.tnf.concurrentframework.example.service.impl;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.tnf.concurrentframework.seckill.dao.UserMapper;
-import org.tnf.concurrentframework.seckill.dto.UserDTO;
-import org.tnf.concurrentframework.seckill.model.User;
-import org.tnf.concurrentframework.seckill.service.UserService;
-import org.tnf.concurrentframework.seckill.utils.JwtUtils;
-import org.tnf.concurrentframework.seckill.vo.UserVO;
+import org.tnf.concurrentframework.example.dao.UserMapper;
+import org.tnf.concurrentframework.example.dto.UserDTO;
+import org.tnf.concurrentframework.example.model.User;
+import org.tnf.concurrentframework.example.service.UserService;
+import org.tnf.concurrentframework.example.utils.JwtUtils;
+import org.tnf.concurrentframework.example.vo.UserVO;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;

@@ -1,4 +1,4 @@
-package org.tnf.concurrentframework.seckill.utils;
+package org.tnf.concurrentframework.example.utils;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
