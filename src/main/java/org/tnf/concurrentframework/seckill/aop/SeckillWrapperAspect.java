@@ -8,8 +8,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import org.tnf.concurrentframework.seckill.annotation.SeckillWrapper;
-import org.tnf.concurrentframework.seckill.core.SeckillContext;
 import org.tnf.concurrentframework.seckill.core.RedisTokenBucket;
+import org.tnf.concurrentframework.seckill.core.SeckillContext;
 
 import java.time.Duration;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,6 +23,13 @@ public class SeckillWrapperAspect {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     private final ConcurrentHashMap<String, RedisTokenBucket> bucketCache = new ConcurrentHashMap<>();
+
+    SeckillWrapperAspect(RedisTemplate<String, Object> redisTemplate,
+                         KafkaTemplate<String, Object> kafkaTemplate) {
+        this.redisTemplate = redisTemplate;
+        this.kafkaTemplate = kafkaTemplate;
+
+    }
 
     @Around("@annotation(wrapper)")
     public Object around(ProceedingJoinPoint joinPoint, SeckillWrapper wrapper) {
@@ -41,25 +48,31 @@ public class SeckillWrapperAspect {
             throw new IllegalArgumentException("Request body must be of type " + paramType.getName());
         }
 
-        RedisTokenBucket tokenBucket = bucketCache.computeIfAbsent(wrapper.topic(),
-                k -> new RedisTokenBucket(redisTemplate, k, wrapper.capacity(), wrapper.refillRate()));
+        String stockKey = "seckill:topic:" + wrapper.topic() + "stock:" + wrapper.stockUUID();
+        // for user
 
-        if (!tokenBucket.tryConsume()) {
-            throw new RuntimeException("Rate limit exceeded");
+        String userKey = "seckill:topic:" + wrapper.topic() + "user:" + context.seckillGetUserId();
+        // for idempotent
+        String uuidKey = userKey + ":uuid:" + context.seckillGetUuid();
+
+
+        if (Boolean.FALSE.equals(redisTemplate.opsForValue().setIfAbsent(userKey, "1", Duration.ofSeconds(1)))) {
+            throw new RuntimeException("Request too frequent");
         }
 
         if (wrapper.idempotent()) {
-            String uuidKey = "seckill:uuid:" + context.seckillGetUuid();
+
             if (Boolean.FALSE.equals(redisTemplate.opsForValue().setIfAbsent(uuidKey, "1", Duration.ofMinutes(10)))) {
                 throw new RuntimeException("Duplicate order request");
             }
         }
 
-        String userKey = "seckill:user:" + context.seckillGetUserId();
-        if (Boolean.FALSE.equals(redisTemplate.opsForValue().setIfAbsent(userKey, "1", Duration.ofSeconds(1)))) {
-            throw new RuntimeException("Request too frequent");
-        }
 
+        Long remainingStock = redisTemplate.opsForValue().decrement(stockKey);
+        if (remainingStock < 0) {
+            throw new RuntimeException("Stock is sold out");
+        }
+        // process success order by kafka.
         context.setProceedTask(() -> {
             try {
                 joinPoint.proceed();
@@ -71,12 +84,5 @@ public class SeckillWrapperAspect {
         kafkaTemplate.send(wrapper.topic(), context);
 
         return context;
-    }
-
-    SeckillWrapperAspect(RedisTemplate<String, Object> redisTemplate,
-                         KafkaTemplate<String, Object> kafkaTemplate) {
-        this.redisTemplate = redisTemplate;
-        this.kafkaTemplate = kafkaTemplate;
-
     }
 }
